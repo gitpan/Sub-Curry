@@ -1,0 +1,19 @@
+This is the README file for Sub::Curry
+
+See the pod for documentation.
+
+
+To build and install this extension, the usual
+
+    perl Makefile.PL
+    make
+    make test
+    make install
+
+will suffice.
+
+Sub::Curry requires perl5.004, and is
+
+Copyright (c) 2000 by Davíð Helgason (dhns@uti.is). All rights reserved. 
+This program is free software; you can redistribute it and/or modify it 
+under the same terms as Perl itself. 
