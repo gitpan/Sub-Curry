@@ -25,13 +25,30 @@ Sub::Curry - Perl module to curry functions ((á la Lisp)).
 	# returns ("hello brave new world")
 	&curried_func3("brave", "new");
 
-=cut
+
+	#### Real-life example :)   this is running somewhere in the world this very moment
+	sub header {
+		my ($self, $header, $value) = @_;
+		$self->{headers}{$header} = $value if $value;
+		return $self->{headers}{$header};
+	}
+	
+	for (qw/cc bcc subject/) {
+		no strict 'refs';
+		*$_ = curry &header, Sub::Curry::Hole, $_;
+	}
+	
+	print main->cc("some value");
+	
+
 
 =head1 DESCRIPTION
 
 This module gives a simple method to curry functions as I (think I) undertand 
 it. I can't really see why anyone would want to do such a thing, but then, there's 
 At Least One Way To Do It, right ;)
+
+(UPDATE: I just used this in a project! The code is the second example above!)
 
 If you don't know what currying is then just ignore it... you'll never
 need it anyhow. Alternately consult (for example) the book at 
@@ -55,11 +72,13 @@ Perhaps the main reason for making this package is to avoid it being included
 in perl6 syntax, as per one dangerous looking RFC. That I think would be a 
 pretty bad idea.
 
+Thanks to Keli H. F. Hlöðversson for making the tests and suggesting optimizations.
 
 Happy hacking.
 
 =cut
 
+use UNIVERSAL;
 use strict;
 use Exporter;
 use vars qw(@ISA @EXPORT $VERSION);
@@ -68,7 +87,7 @@ BEGIN {
 	@ISA         = qw(Exporter);
 	@EXPORT      = qw(&curry);
 
-	$VERSION = "0.40";
+	$VERSION = "0.06";
 }
 
 =head1 FUNCTIONS
@@ -88,23 +107,13 @@ sub curry (\&;@) {
 	my ($funcref, @spice) = @_;
 
 	return  sub {
-				my @total;
 				my $count = 0;
 				foreach (@spice) {
-					if (ref $_ eq "Sub::Curry::Hole") {
-						push @total, $_[$count];
-						$count++;
-					} else {
-						push @total, $_;
-					}
+					splice @_, $count, 0, $_
+						unless UNIVERSAL::isa($_, "Sub::Curry::Hole");
+					$count++;
 				}
-				push @total, @_[$count..$#_];
-
-				if (wantarray) {
-					return &$funcref(@total);
-				} else {
-					return scalar &$funcref(@total);
-				}
+				goto &$funcref;
 			};
 }
 
@@ -116,7 +125,8 @@ Returns one or more Sub::Curry::Hole objects that are otherwise empty.
 =cut 
 
 sub Hole (;$){
-	return map {bless \my $foo, "Sub::Curry::Hole"} (1..(shift||1));
+	return map {bless [], "Sub::Curry::Hole"} (1..(shift||1)) if wantarray;
+	return bless [], "Sub::Curry::Hole";
 }
 
 =back
@@ -124,9 +134,9 @@ sub Hole (;$){
 =head1 DIRECTIONS
 
 One thing to consider is trying to comprehend subroutine prototypes. This would make 
-curry much cooler.  
+curry much cooler.
 
-Should Sub::Curry::Hole be exported or renamed?
+Should Sub::Curry::Hole be exported somehow? or renamed?
 
 =head1 COPYRIGHT
 

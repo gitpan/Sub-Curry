@@ -3,6 +3,7 @@ use ExtUtils::MakeMaker;
 # the contents of the Makefile that is written.
 WriteMakefile(
     'NAME'		=> 'Sub::Curry',
-	'VERSION'	=> '0.04',
-	'dist'		=> { COMPRESS => 'gzip -9f', SUFFIX => 'gz', },
+	'VERSION'	=> '1.05',
+	'dist'		=> { COMPRESS => 'gzip', SUFFIX => 'gz', },
+	'AUTHOR'	=> 'Davíð Helgason <dhns@uti.is>',
 );
