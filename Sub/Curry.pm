@@ -9,21 +9,21 @@ Sub::Curry - Perl module to curry functions ((á la Lisp)).
 	use Sub::Curry;
 	
 	sub dummy {
-		return @_;
+		return join " ", @_;
 	}
-
-	$curried_func1 = curry (&dummy, "hello", "world");
-	$curried_func2 = curry (&dummy, "hello", Sub::Curry::Hole,    "world");
-	$curried_func3 = curry (&dummy, "hello", Sub::Curry::Hole(2), "world");
 	
-	# returns ("hello", "world", "brave", "new")
-	&$curried_func1("brave", "new");
+	*curried_func1 = curry (&dummy, "hello", "world");
+	*curried_func2 = curry (&dummy, "hello", Sub::Curry::Hole,    "world");
+	*curried_func3 = curry (&dummy, "hello", Sub::Curry::Hole(2), "world");
 	
-	# returns ("hello", "new", "world", "brave")
-	&$curried_func2("brave", "new");
+	# returns ("hello world brave new")
+	&curried_func1("brave", "new");
 	
-	# returns ("hello", "brave", "new", "world")
-	&$curried_func3("brave", "new");
+	# returns ("hello brave world new")
+	&curried_func2("brave", "new");
+	
+	# returns ("hello brave new world")
+	&curried_func3("brave", "new");
 
 =cut
 
@@ -34,12 +34,14 @@ it. I can't really see why anyone would want to do such a thing, but then, there
 At Least One Way To Do It, right ;)
 
 If you don't know what currying is then just ignore it... you'll never
-need it anyhow. Altenately consult (for example) the book at 
+need it anyhow. Alternately consult (for example) the book at 
 ftp://ftp.inria.fr/lang/caml-light/cl74tutorial.txt, which explains it in very (too) 
 much detail (chapter 4.6.2).
 
 The process is not quite as painless as in true functional languages, so you get
-a anonymous function reference instead of a real function back.
+a anonymous function reference instead of a real function back. However by assigning 
+to a typeglob instead of a scalar, you create just that function.
+
 
 
 It is possible to leave holes in the parameter list, by putting parameters of
@@ -66,7 +68,7 @@ BEGIN {
 	@ISA         = qw(Exporter);
 	@EXPORT      = qw(&curry);
 
-	$VERSION = "0.10";
+	$VERSION = "0.40";
 }
 
 =head1 FUNCTIONS
@@ -122,10 +124,9 @@ sub Hole (;$){
 =head1 DIRECTIONS
 
 One thing to consider is trying to comprehend subroutine prototypes. This would make 
-curry much cooler. The other thing would be to create real subroutines, instead of 
-just anonymous subrefs. 
+curry much cooler.  
 
-Should Sub::Curry::Hole be exported or renamed.
+Should Sub::Curry::Hole be exported or renamed?
 
 =head1 COPYRIGHT
 
@@ -133,5 +134,6 @@ Copyright (c) 2000 by Davíð Helgason (dhns@uti.is). All rights reserved. This pr
 free software; you can redistribute it and/or modify it under the same terms as Perl itself. 
 
 =cut
+
 
 1;    # ;)
