@@ -1,5 +1,5 @@
 Makefile.PL
-MANIFEST
 README
 lib/Sub/Curry.pm
 test.pl
+MANIFEST
