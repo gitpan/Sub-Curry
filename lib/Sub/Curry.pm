@@ -89,7 +89,7 @@ BEGIN {
     @ISA         = qw(Exporter);
     @EXPORT      = qw(&curry);
 
-    $VERSION = '0.07';
+    $VERSION = '0.08';
 }
 
 
